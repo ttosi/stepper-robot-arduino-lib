@@ -9,6 +9,7 @@
 // LINKS:
 // Project home: https://code.google.com/p/stepper-robot-arduino-lib/
 // Or: https://fperrotti.wikispaces.com/Stepper+Lib+Arduino
+// (em portugues brasileiro)
 //
 // DISCLAIMER:
 // This software is furnished "as is", without technical support, and with no 
