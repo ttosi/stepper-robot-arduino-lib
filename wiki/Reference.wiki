@@ -151,8 +151,8 @@ StepperRobot rob;
  
 #define stepsPerRevolution  48  
 #define startSpeed          72  
-#define cruizeSpeed        182  
-#define pulsesToCruize     110  
+#define cruiseSpeed        182  
+#define pulsesToCruise     110  
  
 #define statusLed           13  
  
@@ -160,7 +160,7 @@ void setup() {
   // Status led
   pinMode(statusLed, OUTPUT);
  
-  rob.init(startSpeed, cruizeSpeed, pulsesToCruize);
+  rob.init(startSpeed, cruiseSpeed, pulsesToCruise);
   rob.initRightMotor(2,3,4,5);
   rob.initLeftMotor(A3,A2,A1,A0);  // funciona com os pinos analógicos.
  
