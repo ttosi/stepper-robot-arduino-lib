@@ -39,14 +39,16 @@ This version implements the following movement types:
 == Automatic acceleration ==
 A pair of stepper motors can move a relatively heavy robot at a relatively high speed, but that speed can only be achieved gradually. Motors can not initiate the movement at full speed and even if it were possible, would not be desirable because the fixed structures on the robot as sensors, arms, antennas, cameras and other could suffer intense inertial impacts.
 
-A classe principal implementa um controle automático de aceleração e desaceleração em todos os movimentos executados a fim de permitir maior velocidade final. Os parâmetros para este recurso são definidos por:
+The main class implements an automatic control of acceleration and deceleration in all movements performed to enable higher end speed. The parameters for this feature are defined at instance initialization by:
+
 {{{
-#define startSpeed          72  // velocidade de partida (em pulsos por segundo)
-#define cruizeSpeed        182  // velocidade de cruzeiro (em pulsos por segundo)
-#define pulsesToCruize     110  // quantos pulsos para chegar em cruzeiro
+# define startSpeed      ​​72 // start speed (pulses per second)
+# define cruizeSpeed ​​   182 // cruise speed (pulses per second)
+# define pulsesToCruize 110 // how many pulses to get cruising
 }}}
 
-As definições acima foram retiradas do programa de exemplo. O robô inicia o movimento na velocidade indicada por startSpeed e acelera gradualmente até atingir a velocidade de cruzeiro definida por cruizeSpeed. A quantidade de pulsos que serão usados para a aceleração (ou desaceleração) é informada por pulsesToCruize. Para parar ou mudar de tipo de movimento o robô é desacelerado até atingir a velocidade de partida. Esse controle é automático.
+As definições acima foram retiradas do programa de exemplo. 
+O robô inicia o movimento na velocidade indicada por startSpeed e acelera gradualmente até atingir a velocidade de cruzeiro definida por cruizeSpeed. A quantidade de pulsos que serão usados para a aceleração (ou desaceleração) é informada por pulsesToCruize. Para parar ou mudar de tipo de movimento o robô é desacelerado até atingir a velocidade de partida. Esse controle é automático.
 
 = Empilhamento de comandos =
 A biblioteca inclui um buffer circular capaz de armazenar uma grande quantidade de comandos de movimento. Uma vez armazenados, estes comandos podem ser executados em sequência automaticamente.
