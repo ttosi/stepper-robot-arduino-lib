@@ -69,18 +69,19 @@ void turboOn();
 void turboOff();
 }}}
 
-= Controle de vibrações =
-Motores de passo têm algumas características de funcionamento que precisam ser levadas em conta durante sua operação. Em baixas rotações, antes de atingir a velocidade de cruzeiro, pode ocorrer alguma vibração. Eventualmente, dependendo dos motores utilizados, da voltagem da bateria, do peso do robô e de outros fatores, em determinados valores de RPM a vibração pode ficar intensa o suficiente para atrapalhar a navegação provocando desvios na trajetória robô. Para diminuir a vibração, a biblioteca usa duas técnicas. A primeira é fazer com que a aceleração e desaceleração passem mais rapidamente pelas baixas rotações. Então a aceleração não é linear, o robô acelera (ou desacelera) mais intensamente em baixas rotações e mais suavemente em rotações mais altas.
+== Vibration Control ==
+Stepper motors have operating characteristics that need to be taken into account during its operation. At low revs, some vibration before it reaches cruising speed, can occur. Eventually, depending on the motor used, battery voltage, the weight of the robot and other factors, certain values ​​of RPM, vibration can be severe enough to disrupt navigation causing deviations in the robot trajectory. To reduce vibration, the library uses two techniques. The first is to make the acceleration and deceleration pass more quickly through the low rpm. So the acceleration is not linear, the robot accelerates (or decelerates) more strongly at low revs and more smoothly at higher speeds.
 
-A segunda técnica usa o corte de alimentação das bobinas antes do final do pulso durante o período de aceleração/desaceleração. Normalmente as bobinas dos motores são alimentadas por todo o período de duração do pulso. Mas a fim de diminuir a vibração, foi implementado o recurso de cortar a alimentação das bobinas antes do final do pulso e aguardar o tempo restante com as bobinas desligadas. Esta técnica além de diminuir bastante a vibração em baixas rotações, também acaba por economizar energia aumentando a autonomia do robô. Os testes realizados deram resultados bastante positivos, então esse recurso já está ativado por default.
+Second technique uses cutting the supply coils before the end of pulse during the acceleration / deceleration. Normally the coils of motors are fed throughout the duration of the pulse. But in order to reduce the vibration of the power coils can be cut before the end of the pulse and wait for the remaining time with the coils turned off. This technique in addition to greatly decrease the vibration at low revs, also happens to save energy and increase robot autonomy. The tests gave very positive results, so this feature is already enabled by default.
 
-O método setCutPercent() informa a porcentagem inicial de corte. Essa porcentagem é um valor entre 0 e 1 que indica a porcentagem do pulso antes do corte. Por exemplo, se o pulso tem a duração de 10 milissegundos e a porcentagem informada é de 0.75, então as bobinas serão alimentadas por 75% do tempo (7.5 ms) e mantidas desligadas pelo tempo restante (2.5 ms).
+The *setCutPercent()* method informs the initial cut percentage. This percentage is a value between 0 and 1 that indicates the percentage of the pulse before cutting. For example, if the pulse has a duration of 10 milliseconds and percentage reported is 0.75, then the coils will be powered by 75% of the time (7.5 ms) and kept turned off the remaining time (2.5 ms).
 {{{
 void setCutPercent(float initialCutPercent);
 }}}
-O corte das bobinas só é feito durante o período de aceleração/desaceleração. Em velocidade de cruzeiro não há nenhum corte. O valor informado pelo método setCutPercent() se refere ao valor inicial de corte, que é aplicado quando os motores giram na velocidade de partida. Conforme a velocidade se aproxima da velocidade de cruzeiro a porcentagem vai aumentando até chegar a 1.0 (100%) na velocidade de cruzeiro.
 
-O melhor valor para esse parâmetro depende de tantos fatores que deve ser calibrado especialmente para o robô em questão e para o modo de operação dos motores (half ou full step) experimentalmente. Valores muito altos (próximos de 1) são menos efetivos, mas valores muito baixos podem provocar a perda de passos. O valor default é 0.9.
+Cutting coils is only done during the acceleration / deceleration. At cruising speed there is no cut. The value entered by *setCutPercent()* method refers to the initial cutoff value, which is applied when the motors rotate at the start speed. As speed increases, percentage increases until reaching 1.0 (100%) at cruising speed.
+
+The best value for this parameter depends on so many factors that must be calibrated especially for the robot in question and the operation mode of motors (half or full step) experimentally. Very high values ​​(close to 1) are less effective, but very low values ​​can cause the loss of steps. The default value is 0.9.
 
 = Movimentos =
 Os movimentos podem ser solicitados de duas maneiras: usando o método move() ou usando o método addMove() em conjunto com o método goNow().
