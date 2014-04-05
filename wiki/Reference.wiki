@@ -18,7 +18,7 @@ This library implements a class that takes care to synchronize the two motors to
 
 
 = Overview =
-A biblioteca assume que existem dois motores de passo de 4 fases instalados em configuração diferencial. Também é assumido que os dois motores têm a mesma quantidade de passos por volta. Os motores podem ser bipolares ou unipolares. A classe principal controla os dois motores mantendo a sincronia entre eles para produzir diversos movimentos. Estes movimentos são sempre quantificados por pulsos. Cada pulso quando enviado para as bobinas dos motores, faz o motores girarem um passo.
+The library assumes that there are two 4-phase stepping motors installed on differential configuration. It is also assumed that both motors have the same number of steps per revolution. The motors can be unipolar or bipolar. The main class controls both motors maintaining synchrony between them to produce different movements quantified by pulses. Each pulse when sent to coils, make motors spin one step.
 
 Todos os métodos utilizados para comandar movimentos são não-bloqueantes. Todos retornam imediatamente e quando é o caso, executam o movimento em segundo plano. Os métodos nunca esperam o final do movimento para retornar. Os movimentos são controlados utilizando o Timer 1 do arduíno. Isso dá maior precisão para a temporização dos pulsos e também elimina a necessidade de uma função de serviço que seja frequentemente chamada pelo loop principal.
 
