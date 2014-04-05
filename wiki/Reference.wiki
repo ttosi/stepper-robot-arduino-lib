@@ -86,9 +86,9 @@ The best value for this parameter depends on so many factors that must be calibr
 == Movements ==
 Movement can be requested in two ways: using the *move()* method or by using *addMove()* method in conjunction with *goNow()* method.
 
-The *move()* method does not use the circular buffer, the movement is not stored, it is executed immediately. The method starts motion and returns. If the robot is already moving, calls to this method are ignored and have no effect. To see if the robot is in motion, use the isMoving() method.
+The *move()* method does not use the circular buffer, the movement is not stored, it is executed immediately. The method starts motion and returns. If the robot is already moving, calls to this method are ignored and have no effect. To see if the robot is in motion, use the *isMoving()* method.
 
-O método stopNow() aborta o movimento em curso imediatamente. Isso é feito simplesmente interrompendo o fluxo de pulsos, portanto cortando a alimentação das bobinas. Dependendo das condições, isso pode não parar imediatamente o robô, já que existe a inércia do movimento em curso que pode empurrar o robô por mais alguns centímetros.
+The *stopNow()* method aborts the ongoing movement immediately. This is accomplished by simply interrupting the pulse's flow, thus cutting the power coils. Depending on conditions, it can not immediately stop the robot, since there is the inertia of the ongoing movement that can push the robot for a few more centimeters.
 {{{
 boolean move(char movType, int pulses);
 boolean isMoving();
@@ -96,42 +96,44 @@ void stopNow();
 void decelStop();
 }}}
 
-O método decelStop() também aborta o movimento em curso, mas faz isso forçando o robô a entrar em desaceleração. O robô para quando atinge a velocidade de partida. A quantidade de pulsos que o robô irá andar até parar efetivamente depende da velocidade em que está se movendo. Se for a velocidade de cruzeiro (máxima) então será necessária a quantidade de pulsos especificada por pulsesToCruize. Se a velocidade for menor, então serão necessários menos pulsos.
+The *decelStop()* method also aborts the ongoing movement, but does so by forcing the robot to go into deceleration. The robot will stop when it reaches the starting speed. The number of pulses that the robot will walk until stop depends on the speed at which it is moving. In cruising speed (maximum) then the amount of pulses specified by *pulsesToCruise* is required. If the speed is lower then fewer pulses are needed.
 
-= Lista de movimentos =
-A outra maneira usa o método addMove(). Este método apenas armazena o movimento no buffer e retorna, o movimento não é iniciado imediatamente. Para iniciar a execução dos movimentos armazenados é preciso chamar o método goNow(). O método goNow() inicia a execução da lista de movimentos e retorna. Os movimentos armazenados no buffer serão executados em sequência até que o buffer fique vazio ou até que seja chamado o método stopAndClear(). Este método chama o método decelStop() para parar o movimento atual e deleta todos os movimentos pendentes no buffer.
 
-É possível adicionar mais movimentos a qualquer momento, mesmo enquanto eles são executados. Os novos movimentos passam a fazer parte da lista de movimentos em execução.
+== Bufferized movements ==
+The other way uses *addMove()* method. This method only stores movement in the buffer and returns, movement is not started immediately. To start the execution of the stored movements you need to call the *goNow()* method. *goNow()* begins execution of the moves list and returns. The movements stored in the buffer will be executed in sequence until the buffer is empty or until the method *stopAndClear()* it is called. This method calls the *decelStop()* method to stop the current move and delete all pending movements in the buffer.
+
+You can add more movements at any time, even while they run. The new movements become part of the list of running movements.
 {{{
 boolean addMove(int movType, int pulses);
 void goNow();
 void stopAndClear();
 }}}
 
-= Chopper para travar rodas =
-Os quatro movimentos do tipo turn exigem que uma das rodas fique parada na mesma posição enquanto a outra se move fazendo um círculo. Para garantir que a roda parada fique realmente parada, as bobinas são ativadas travando a roda na posição em que está. No caso do movimento mvBrake, as duas rodas ficam travadas na mesma posição. Sempre que as rodas estão travadas, a biblioteca utiliza a técnica de chopper para energizar as bobinas. Isso evita que uma bobina fique ligada continuamente por um tempo longo, o que poderia queimar o motor ou a placa controladora. Além de proteger o motor e os circuitos, também economiza energia, já que a bobina não fica ligada o tempo todo.
+== Chopper to lock wheels ==
+The four _turn_ type movements demand that one wheel comes to rest in the same position while the other moves in a circle. In the case of mvBrake movement, both wheels are locked in the same position. To ensure that the stop wheel is actually stopped, the coils are activated locking the wheel in its position. When the wheels are locked, the library uses the chopper technique to energize the coils. This prevents a coil to be powered continuously for a long time, which could burn the motor or the controller board. Besides protecting the motor and circuitry that also saves energy, since the coil is not powered all the time.
 
-Abaixo a declaração da classe tal como é vista pelo arquivo principal.
+Below the class declaration as perceived by the main file.
+
 {{{
 class StepperRobot{
 public:
-   // Inicialização
-   void init(int startSpeed, int cruizeSpeed, int pulsesToCruizeSpeed);
+   // setup
+   void init(int startSpeed, int cruiseSpeed, int pulsesToCruiseSpeed);
    void initLeftMotor(int mPin_1, int mPin_2, int mPin_3, int mPin_4);
    void initRightMotor(int mPin_1, int mPin_2, int mPin_3, int mPin_4);
  
-   // Movimento
+   // movements
    boolean move(char movType, int pulses);
    boolean isMoving();
    void decelStop();
    void stopNow();
  
-   // Lista de movimentos
+   // bufferized movements
    boolean addMove(int movType, int pulses);
    void goNow();
    void stopAndClear();
  
-   // Configuração
+   // Config
    void turboOn();
    void turboOff();
    void halfStepOn();
