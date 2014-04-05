@@ -22,7 +22,7 @@ The library assumes that there are two 4-phase stepping motors installed on diff
 
 All methods are non-blocking. All return immediately and when appropriate, perform the movement in background. The methods never wait the end of the movement to return. The movements are controlled using the Timer 1 Arduino. This gives more accurately for timing pulses and also eliminates the need for a service function that is often called by the main loop.
 
-Esta versão implementa os seguintes tipos de movimento:
+This version implements the following movement types:
 {{{
 #define mvAhead    0
 #define mvBack     1
@@ -35,8 +35,9 @@ Esta versão implementa os seguintes tipos de movimento:
 #define mvBrake    8
 }}}
 
-= Aceleração automática =
-Um par de motores de passo pode mover um robô relativamente pesado a uma velocidade relativamente alta, mas essa velocidade só pode ser atingida gradativamente. Não é possível iniciar o movimento já na velocidade máxima e mesmo que isso fosse possível, não seria desejável porque as estruturas fixas no robô como sensores, braços, antenas, câmeras e outros sofreriam impactos inerciais intensos sempre que o robô iniciasse ou finalizasse o movimento.
+
+== Automatic acceleration ==
+A pair of stepper motors can move a relatively heavy robot at a relatively high speed, but that speed can only be achieved gradually. Motors can not initiate the movement at full speed and even if it were possible, would not be desirable because the fixed structures on the robot as sensors, arms, antennas, cameras and other could suffer intense inertial impacts.
 
 A classe principal implementa um controle automático de aceleração e desaceleração em todos os movimentos executados a fim de permitir maior velocidade final. Os parâmetros para este recurso são definidos por:
 {{{
