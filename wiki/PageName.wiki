@@ -60,7 +60,7 @@ Motores de passo têm algumas características de funcionamento que precisam ser
 A segunda técnica usa o corte de alimentação das bobinas antes do final do pulso durante o período de aceleração/desaceleração. Normalmente as bobinas dos motores são alimentadas por todo o período de duração do pulso. Mas a fim de diminuir a vibração, foi implementado o recurso de cortar a alimentação das bobinas antes do final do pulso e aguardar o tempo restante com as bobinas desligadas. Esta técnica além de diminuir bastante a vibração em baixas rotações, também acaba por economizar energia aumentando a autonomia do robô. Os testes realizados deram resultados bastante positivos, então esse recurso já está ativado por default.
 
 O método setCutPercent() informa a porcentagem inicial de corte. Essa porcentagem é um valor entre 0 e 1 que indica a porcentagem do pulso antes do corte. Por exemplo, se o pulso tem a duração de 10 milissegundos e a porcentagem informada é de 0.75, então as bobinas serão alimentadas por 75% do tempo (7.5 ms) e mantidas desligadas pelo tempo restante (2.5 ms).
-{{{{
+{{{
 void setCutPercent(float initialCutPercent);
 }}}
 O corte das bobinas só é feito durante o período de aceleração/desaceleração. Em velocidade de cruzeiro não há nenhum corte. O valor informado pelo método setCutPercent() se refere ao valor inicial de corte, que é aplicado quando os motores giram na velocidade de partida. Conforme a velocidade se aproxima da velocidade de cruzeiro a porcentagem vai aumentando até chegar a 1.0 (100%) na velocidade de cruzeiro.
