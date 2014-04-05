@@ -48,16 +48,16 @@ The main class implements an automatic control of acceleration and deceleration 
 
 The motors start movement at the speed indicated by *startSpeed* ​​and gradually accelerates until it reaches cruising speed set by *cruiseSpeed*. The number of pulses that will be used for the acceleration (or deceleration) is informed by *pulsesToCruise*. To stop or change the type of movement the robot is decelerated until it reaches the starting speed. This control is automatic.
 
-= Empilhamento de comandos =
-A biblioteca inclui um buffer circular capaz de armazenar uma grande quantidade de comandos de movimento. Uma vez armazenados, estes comandos podem ser executados em sequência automaticamente.
-
-= Inicialização =
-A biblioteca já cria uma instância da classe principal (rob) mas ela precisa ser inicializada no setup. Também é preciso informar quais pinos serão usados para cada motor. Os pinos para cada motor não precisam estar em sequência como no exemplo. Além disso, caso seja necessário é possível usar os pinos analógicos.
+== Initialization ==
+The library already creates an instance of the main class (rob) but it needs to be initialized in setup() function. Is also required inform which pins will be used for each engine. If necessary you can use the analog pins.
 {{{
- rob.init(stepsPerRevolution, startSpeed, cruiseSpeed, pulsesToCruise);
+ rob.init(startSpeed, cruiseSpeed, pulsesToCruise);
  rob.initRightMotor(4,5,6,7);
  rob.initLeftMotor(9,10,11,12);
 }}}
+
+= Empilhamento de comandos =
+A biblioteca inclui um buffer circular capaz de armazenar uma grande quantidade de comandos de movimento. Uma vez armazenados, estes comandos podem ser executados em sequência automaticamente.
 
 = Modos de operação =
 Todo motor de passo pode ser operado em pelo menos 3 modos: passo completo (full step) com uma bobina, passo completo com duas bobinas e meio passo (half step). A biblioteca dá suporte aos três modos. Existem dois atributos na classe que controlam o modo de operação: halfStep e turbo. O de maior prioridade é o halfStep que seleciona entre o modo meio passo e o modo de passo completo. Caso o modo passo completo esteja selecionado, então o atributo turbo seleciona entre o modo de passo completo com uma bobina ou com duas. Quando o modo meio passo está selecionado o atributo turbo não tem efeito. Os quatro métodos listados abaixo controlam estes dois atributos. Recomenda-se selecionar o modo de operação na função setup() e não mudar durante a operação. Mudanças frequentes de modo podem ter impacto na precisão da navegação. É importante notar que o modo de operação dos motores influi bastante na vibração do robô. Em half-step os níveis de vibração são muito menores.
