@@ -1,0 +1,199 @@
+#StepperRobot lib documentation
+
+= Introduction =
+Aqui está apresentada uma biblioteca para Arduíno feita para controlar um robô movido por dois motores de passo em configuração diferencial. A biblioteca cuida de controlar os dois motores para gerar os movimentos programados. Também foram implementados recursos avançados para a redução de vibrações, economia de energia e proteção dos motores e circuitos de controle.
+
+
+= Overview =
+A biblioteca assume que existem dois motores de passo de 4 fases instalados em configuração diferencial. Também é assumido que os dois motores têm a mesma quantidade de passos por volta. Os motores podem ser bipolares ou unipolares. A classe principal controla os dois motores mantendo a sincronia entre eles para produzir diversos movimentos. Estes movimentos são sempre quantificados por pulsos. Cada pulso quando enviado para as bobinas dos motores, faz o motores girarem um passo.
+
+Todos os métodos utilizados para comandar movimentos são não-bloqueantes. Todos retornam imediatamente e quando é o caso, executam o movimento em segundo plano. Os métodos nunca esperam o final do movimento para retornar. Os movimentos são controlados utilizando o Timer 1 do arduíno. Isso dá maior precisão para a temporização dos pulsos e também elimina a necessidade de uma função de serviço que seja frequentemente chamada pelo loop principal.
+
+Esta versão implementa os seguintes tipos de movimento:
+
+#define mvAhead    0
+#define mvBack     1
+#define mvSpinL    2
+#define mvSpinR    3
+#define mvTurnL    4
+#define mvTurnR    5
+#define mvBkTurnL  6
+#define mvBkTurnR  7
+#define mvBrake    8
+
+
+= Aceleração automática =
+Um par de motores de passo pode mover um robô relativamente pesado a uma velocidade relativamente alta, mas essa velocidade só pode ser atingida gradativamente. Não é possível iniciar o movimento já na velocidade máxima e mesmo que isso fosse possível, não seria desejável porque as estruturas fixas no robô como sensores, braços, antenas, câmeras e outros sofreriam impactos inerciais intensos sempre que o robô iniciasse ou finalizasse o movimento.
+
+A classe principal implementa um controle automático de aceleração e desaceleração em todos os movimentos executados a fim de permitir maior velocidade final. Os parâmetros para este recurso são definidos por:
+
+#define startSpeed          72  // velocidade de partida (em pulsos por segundo)
+#define cruizeSpeed        182  // velocidade de cruzeiro (em pulsos por segundo)
+#define pulsesToCruize     110  // quantos pulsos para chegar em cruzeiro
+
+
+As definições acima foram retiradas do programa de exemplo. O robô inicia o movimento na velocidade indicada por startSpeed e acelera gradualmente até atingir a velocidade de cruzeiro definida por cruizeSpeed. A quantidade de pulsos que serão usados para a aceleração (ou desaceleração) é informada por pulsesToCruize. Para parar ou mudar de tipo de movimento o robô é desacelerado até atingir a velocidade de partida. Esse controle é automático.
+
+= Empilhamento de comandos =
+A biblioteca inclui um buffer circular capaz de armazenar uma grande quantidade de comandos de movimento. Uma vez armazenados, estes comandos podem ser executados em sequência automaticamente.
+
+= Inicialização =
+A biblioteca já cria uma instância da classe principal (rob) mas ela precisa ser inicializada no setup. Também é preciso informar quais pinos serão usados para cada motor. Os pinos para cada motor não precisam estar em sequência como no exemplo. Além disso, caso seja necessário é possível usar os pinos analógicos.
+{{{
+ rob.init(stepsPerRevolution, startSpeed, cruizeSpeed, pulsesToCruize);
+ rob.initRightMotor(4,5,6,7);
+ rob.initLeftMotor(9,10,11,12);
+}}}
+
+= Modos de operação =
+Todo motor de passo pode ser operado em pelo menos 3 modos: passo completo (full step) com uma bobina, passo completo com duas bobinas e meio passo (half step). A biblioteca dá suporte aos três modos. Existem dois atributos na classe que controlam o modo de operação: halfStep e turbo. O de maior prioridade é o halfStep que seleciona entre o modo meio passo e o modo de passo completo. Caso o modo passo completo esteja selecionado, então o atributo turbo seleciona entre o modo de passo completo com uma bobina ou com duas. Quando o modo meio passo está selecionado o atributo turbo não tem efeito. Os quatro métodos listados abaixo controlam estes dois atributos. Recomenda-se selecionar o modo de operação na função setup() e não mudar durante a operação. Mudanças frequentes de modo podem ter impacto na precisão da navegação. É importante notar que o modo de operação dos motores influi bastante na vibração do robô. Em half-step os níveis de vibração são muito menores.
+{{{
+void halfStepOn();
+void halfStepOff();
+void turboOn();
+void turboOff();
+}}}
+
+= Controle de vibrações =
+Motores de passo têm algumas características de funcionamento que precisam ser levadas em conta durante sua operação. Em baixas rotações, antes de atingir a velocidade de cruzeiro, pode ocorrer alguma vibração. Eventualmente, dependendo dos motores utilizados, da voltagem da bateria, do peso do robô e de outros fatores, em determinados valores de RPM a vibração pode ficar intensa o suficiente para atrapalhar a navegação provocando desvios na trajetória robô. Para diminuir a vibração, a biblioteca usa duas técnicas. A primeira é fazer com que a aceleração e desaceleração passem mais rapidamente pelas baixas rotações. Então a aceleração não é linear, o robô acelera (ou desacelera) mais intensamente em baixas rotações e mais suavemente em rotações mais altas.
+
+A segunda técnica usa o corte de alimentação das bobinas antes do final do pulso durante o período de aceleração/desaceleração. Normalmente as bobinas dos motores são alimentadas por todo o período de duração do pulso. Mas a fim de diminuir a vibração, foi implementado o recurso de cortar a alimentação das bobinas antes do final do pulso e aguardar o tempo restante com as bobinas desligadas. Esta técnica além de diminuir bastante a vibração em baixas rotações, também acaba por economizar energia aumentando a autonomia do robô. Os testes realizados deram resultados bastante positivos, então esse recurso já está ativado por default.
+
+O método setCutPercent() informa a porcentagem inicial de corte. Essa porcentagem é um valor entre 0 e 1 que indica a porcentagem do pulso antes do corte. Por exemplo, se o pulso tem a duração de 10 milissegundos e a porcentagem informada é de 0.75, então as bobinas serão alimentadas por 75% do tempo (7.5 ms) e mantidas desligadas pelo tempo restante (2.5 ms).
+{{{{
+void setCutPercent(float initialCutPercent);
+}}}
+O corte das bobinas só é feito durante o período de aceleração/desaceleração. Em velocidade de cruzeiro não há nenhum corte. O valor informado pelo método setCutPercent() se refere ao valor inicial de corte, que é aplicado quando os motores giram na velocidade de partida. Conforme a velocidade se aproxima da velocidade de cruzeiro a porcentagem vai aumentando até chegar a 1.0 (100%) na velocidade de cruzeiro.
+
+O melhor valor para esse parâmetro depende de tantos fatores que deve ser calibrado especialmente para o robô em questão e para o modo de operação dos motores (half ou full step) experimentalmente. Valores muito altos (próximos de 1) são menos efetivos, mas valores muito baixos podem provocar a perda de passos. O valor default é 0.9.
+
+= Movimentos =
+Os movimentos podem ser solicitados de duas maneiras: usando o método move() ou usando o método addMove() em conjunto com o método goNow().
+
+O método move() não usa o buffer circular, o movimento não é armazenado, é executado imediatamente. O método inicia o movimento e retorna. Caso o robô já esteja em movimento, chamadas a esse método são ignoradas e não têm nenhum efeito. Para saber se o robô está em movimento, use o método isMoving().
+
+O método stopNow() aborta o movimento em curso imediatamente. Isso é feito simplesmente interrompendo o fluxo de pulsos, portanto cortando a alimentação das bobinas. Dependendo das condições, isso pode não parar imediatamente o robô, já que existe a inércia do movimento em curso que pode empurrar o robô por mais alguns centímetros.
+{{{
+boolean move(char movType, int pulses);
+boolean isMoving();
+void stopNow();
+void decelStop();
+}}}
+
+O método decelStop() também aborta o movimento em curso, mas faz isso forçando o robô a entrar em desaceleração. O robô para quando atinge a velocidade de partida. A quantidade de pulsos que o robô irá andar até parar efetivamente depende da velocidade em que está se movendo. Se for a velocidade de cruzeiro (máxima) então será necessária a quantidade de pulsos especificada por pulsesToCruize. Se a velocidade for menor, então serão necessários menos pulsos.
+
+= Lista de movimentos =
+A outra maneira usa o método addMove(). Este método apenas armazena o movimento no buffer e retorna, o movimento não é iniciado imediatamente. Para iniciar a execução dos movimentos armazenados é preciso chamar o método goNow(). O método goNow() inicia a execução da lista de movimentos e retorna. Os movimentos armazenados no buffer serão executados em sequência até que o buffer fique vazio ou até que seja chamado o método stopAndClear(). Este método chama o método decelStop() para parar o movimento atual e deleta todos os movimentos pendentes no buffer.
+
+É possível adicionar mais movimentos a qualquer momento, mesmo enquanto eles são executados. Os novos movimentos passam a fazer parte da lista de movimentos em execução.
+{{{
+boolean addMove(int movType, int pulses);
+void goNow();
+void stopAndClear();
+}}}
+
+= Chopper para travar rodas =
+Os quatro movimentos do tipo turn exigem que uma das rodas fique parada na mesma posição enquanto a outra se move fazendo um círculo. Para garantir que a roda parada fique realmente parada, as bobinas são ativadas travando a roda na posição em que está. No caso do movimento mvBrake, as duas rodas ficam travadas na mesma posição. Sempre que as rodas estão travadas, a biblioteca utiliza a técnica de chopper para energizar as bobinas. Isso evita que uma bobina fique ligada continuamente por um tempo longo, o que poderia queimar o motor ou a placa controladora. Além de proteger o motor e os circuitos, também economiza energia, já que a bobina não fica ligada o tempo todo.
+
+Abaixo a declaração da classe tal como é vista pelo arquivo principal.
+
+class StepperRobot{
+public:
+   // Inicialização
+   void init(int startSpeed, int cruizeSpeed, int pulsesToCruizeSpeed);
+   void initLeftMotor(int mPin_1, int mPin_2, int mPin_3, int mPin_4);
+   void initRightMotor(int mPin_1, int mPin_2, int mPin_3, int mPin_4);
+ 
+   // Movimento
+   boolean move(char movType, int pulses);
+   boolean isMoving();
+   void decelStop();
+   void stopNow();
+ 
+   // Lista de movimentos
+   boolean addMove(int movType, int pulses);
+   void goNow();
+   void stopAndClear();
+ 
+   // Configuração
+   void turboOn();
+   void turboOff();
+   void halfStepOn();
+   void halfStepOff();
+   void setCutPercent(float initialCutPercent)
+};
+ 
+StepperRobot rob;
+
+
+= Programa exemplo =
+{{{
+#include <TimerOne.h>
+#include <StepperRobot.h>
+ 
+#define stepsPerRevolution  48  // Passos por volta. Assume-se que os dois motores são iguais
+#define startSpeed          72  // velocidade de partida em pulsos por segundo
+#define cruizeSpeed        182  // velocidade de cruzeiro em pulsos por segundo
+#define pulsesToCruize     110  // quantos pulsos para chegar em cruzeiro
+ 
+#define statusLed           13  // led onboard para status
+ 
+void setup() {
+  // Led de status
+  pinMode(statusLed, OUTPUT);
+ 
+  rob.init(startSpeed, cruizeSpeed, pulsesToCruize);
+  rob.initRightMotor(2,3,4,5);
+  rob.initLeftMotor(A3,A2,A1,A0);  // funciona com os pinos analógicos.
+ 
+  rob.halfStepOff();
+  rob.turboOn();
+ 
+  digitalWrite(statusLed, true);
+  delay(1500); // Vai achar este delay muito conveniente
+  digitalWrite(statusLed, false);
+}
+ 
+// pulsos para volta completa
+#define turnPulses 320
+#define spinPulses (turnPulses/2)
+ 
+// dica importante: A quantidade de pulsos para dar uma volta completa
+// nos dois movimentos acima depende (entre outras coisas) da distancia
+// entre as rodas. Pequenas diferenças na distancia já provocam erros
+// de navegação bem significativos. Se for possível, ajuste a distancia
+// entre as rodas para que a quantidade de pulsos para dar uma volta
+// no movimento turn assuma um valor com o maior número de divisores
+// possível. No mínimo que seja um número par. Se for possível que seja
+// divisível por 4 ou 8 ou 16, etc, melhor ainda. Isso permite maior precisão
+// para obter frações de volta.
+ 
+void loop() {
+  // led de status com batida de coração
+  // não funciona se tiver muitos delays no código
+  unsigned long ms= millis();
+  digitalWrite( statusLed, (ms >> 8) & (ms >> 6) & 1);
+ 
+  if(!rob.isMoving())
+  {
+    delay(100);  // espera baixar a poeira
+ 
+    // Armazena a sequencia de movimentos
+    rob.addMove(mvAhead, stepsPerRevolution*5);
+    rob.addMove(mvSpinL, spinPulses*2);
+    rob.addMove(mvSpinR, spinPulses*2);
+    rob.addMove(mvBack, stepsPerRevolution*5);
+    rob.addMove(mvSpinR, spinPulses/4);
+    rob.addMove(mvTurnL, turnPulses /2);
+    rob.addMove(mvTurnR, turnPulses/2);
+    rob.addMove(mvTurnL, turnPulses);
+    rob.addMove(mvBkTurnR, turnPulses/2);
+    rob.addMove(mvBkTurnL, turnPulses/2);
+    rob.addMove(mvSpinR, 3 * spinPulses / 4);
+    rob.addMove(mvBrake, startSpeed*5);
+ 
+    // Agora começa a executar os movimentos armazenados.
+    rob.goNow();
+  }
+}
+}}}
