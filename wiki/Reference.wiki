@@ -40,15 +40,13 @@ This version implements the following movement types:
 A pair of stepper motors can move a relatively heavy robot at a relatively high speed, but that speed can only be achieved gradually. Motors can not initiate the movement at full speed and even if it were possible, would not be desirable because the fixed structures on the robot as sensors, arms, antennas, cameras and other could suffer intense inertial impacts.
 
 The main class implements an automatic control of acceleration and deceleration in all movements performed to enable higher end speed. The parameters for this feature are defined at instance initialization by:
-
 {{{
 # define startSpeed      ​​72 // start speed (pulses per second)
-# define cruizeSpeed ​​   182 // cruise speed (pulses per second)
-# define pulsesToCruize 110 // how many pulses to get cruising
+# define cruiseSpeed ​​   182 // cruise speed (pulses per second)
+# define pulsesToCruise 110 // how many pulses to get cruising
 }}}
 
-As definições acima foram retiradas do programa de exemplo. 
-O robô inicia o movimento na velocidade indicada por startSpeed e acelera gradualmente até atingir a velocidade de cruzeiro definida por cruizeSpeed. A quantidade de pulsos que serão usados para a aceleração (ou desaceleração) é informada por pulsesToCruize. Para parar ou mudar de tipo de movimento o robô é desacelerado até atingir a velocidade de partida. Esse controle é automático.
+The motors start movement at the speed indicated by *startSpeed* ​​and gradually accelerates until it reaches cruising speed set by *cruiseSpeed*. The number of pulses that will be used for the acceleration (or deceleration) is informed by *pulsesToCruise*. To stop or change the type of movement the robot is decelerated until it reaches the starting speed. This control is automatic.
 
 = Empilhamento de comandos =
 A biblioteca inclui um buffer circular capaz de armazenar uma grande quantidade de comandos de movimento. Uma vez armazenados, estes comandos podem ser executados em sequência automaticamente.
@@ -56,7 +54,7 @@ A biblioteca inclui um buffer circular capaz de armazenar uma grande quantidade 
 = Inicialização =
 A biblioteca já cria uma instância da classe principal (rob) mas ela precisa ser inicializada no setup. Também é preciso informar quais pinos serão usados para cada motor. Os pinos para cada motor não precisam estar em sequência como no exemplo. Além disso, caso seja necessário é possível usar os pinos analógicos.
 {{{
- rob.init(stepsPerRevolution, startSpeed, cruizeSpeed, pulsesToCruize);
+ rob.init(stepsPerRevolution, startSpeed, cruiseSpeed, pulsesToCruise);
  rob.initRightMotor(4,5,6,7);
  rob.initLeftMotor(9,10,11,12);
 }}}
