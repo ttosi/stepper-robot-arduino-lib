@@ -10,7 +10,7 @@ A biblioteca assume que existem dois motores de passo de 4 fases instalados em c
 Todos os métodos utilizados para comandar movimentos são não-bloqueantes. Todos retornam imediatamente e quando é o caso, executam o movimento em segundo plano. Os métodos nunca esperam o final do movimento para retornar. Os movimentos são controlados utilizando o Timer 1 do arduíno. Isso dá maior precisão para a temporização dos pulsos e também elimina a necessidade de uma função de serviço que seja frequentemente chamada pelo loop principal.
 
 Esta versão implementa os seguintes tipos de movimento:
-
+{{{
 #define mvAhead    0
 #define mvBack     1
 #define mvSpinL    2
@@ -20,17 +20,17 @@ Esta versão implementa os seguintes tipos de movimento:
 #define mvBkTurnL  6
 #define mvBkTurnR  7
 #define mvBrake    8
-
+}}}
 
 = Aceleração automática =
 Um par de motores de passo pode mover um robô relativamente pesado a uma velocidade relativamente alta, mas essa velocidade só pode ser atingida gradativamente. Não é possível iniciar o movimento já na velocidade máxima e mesmo que isso fosse possível, não seria desejável porque as estruturas fixas no robô como sensores, braços, antenas, câmeras e outros sofreriam impactos inerciais intensos sempre que o robô iniciasse ou finalizasse o movimento.
 
 A classe principal implementa um controle automático de aceleração e desaceleração em todos os movimentos executados a fim de permitir maior velocidade final. Os parâmetros para este recurso são definidos por:
-
+{{{
 #define startSpeed          72  // velocidade de partida (em pulsos por segundo)
 #define cruizeSpeed        182  // velocidade de cruzeiro (em pulsos por segundo)
 #define pulsesToCruize     110  // quantos pulsos para chegar em cruzeiro
-
+}}}
 
 As definições acima foram retiradas do programa de exemplo. O robô inicia o movimento na velocidade indicada por startSpeed e acelera gradualmente até atingir a velocidade de cruzeiro definida por cruizeSpeed. A quantidade de pulsos que serão usados para a aceleração (ou desaceleração) é informada por pulsesToCruize. Para parar ou mudar de tipo de movimento o robô é desacelerado até atingir a velocidade de partida. Esse controle é automático.
 
@@ -96,7 +96,7 @@ void stopAndClear();
 Os quatro movimentos do tipo turn exigem que uma das rodas fique parada na mesma posição enquanto a outra se move fazendo um círculo. Para garantir que a roda parada fique realmente parada, as bobinas são ativadas travando a roda na posição em que está. No caso do movimento mvBrake, as duas rodas ficam travadas na mesma posição. Sempre que as rodas estão travadas, a biblioteca utiliza a técnica de chopper para energizar as bobinas. Isso evita que uma bobina fique ligada continuamente por um tempo longo, o que poderia queimar o motor ou a placa controladora. Além de proteger o motor e os circuitos, também economiza energia, já que a bobina não fica ligada o tempo todo.
 
 Abaixo a declaração da classe tal como é vista pelo arquivo principal.
-
+{{{
 class StepperRobot{
 public:
    // Inicialização
@@ -124,7 +124,7 @@ public:
 };
  
 StepperRobot rob;
-
+}}}
 
 = Programa exemplo =
 {{{
@@ -165,8 +165,8 @@ void setup() {
 // entre as rodas para que a quantidade de pulsos para dar uma volta
 // no movimento turn assuma um valor com o maior número de divisores
 // possível. No mínimo que seja um número par. Se for possível que seja
-// divisível por 4 ou 8 ou 16, etc, melhor ainda. Isso permite maior precisão
-// para obter frações de volta.
+// divisível por 4 ou 8 ou 16, etc, melhor ainda. Isso permite maior
+// precisão para obter frações de volta.
  
 void loop() {
   // led de status com batida de coração
@@ -196,4 +196,5 @@ void loop() {
     rob.goNow();
   }
 }
+
 }}}
