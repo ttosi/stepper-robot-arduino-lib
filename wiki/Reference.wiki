@@ -17,10 +17,10 @@ This library implements a class that takes care to synchronize the two motors to
 *Note:* This version uses TimerOne? library to control the timer. This library is not included on package but you can download from [http://playground.arduino.cc/Code/Timer1 Timer1 page]. 
 
 
-= Overview =
+== Introduction ==
 The library assumes that there are two 4-phase stepping motors installed on differential configuration. It is also assumed that both motors have the same number of steps per revolution. The motors can be unipolar or bipolar. The main class controls both motors maintaining synchrony between them to produce different movements quantified by pulses. Each pulse when sent to coils, make motors spin one step.
 
-Todos os métodos utilizados para comandar movimentos são não-bloqueantes. Todos retornam imediatamente e quando é o caso, executam o movimento em segundo plano. Os métodos nunca esperam o final do movimento para retornar. Os movimentos são controlados utilizando o Timer 1 do arduíno. Isso dá maior precisão para a temporização dos pulsos e também elimina a necessidade de uma função de serviço que seja frequentemente chamada pelo loop principal.
+All methods are non-blocking. All return immediately and when appropriate, perform the movement in background. The methods never wait the end of the movement to return. The movements are controlled using the Timer 1 Arduino. This gives more accurately for timing pulses and also eliminates the need for a service function that is often called by the main loop.
 
 Esta versão implementa os seguintes tipos de movimento:
 {{{
