@@ -83,10 +83,10 @@ Cutting coils is only done during the acceleration / deceleration. At cruising s
 
 The best value for this parameter depends on so many factors that must be calibrated especially for the robot in question and the operation mode of motors (half or full step) experimentally. Very high values ​​(close to 1) are less effective, but very low values ​​can cause the loss of steps. The default value is 0.9.
 
-= Movimentos =
-Os movimentos podem ser solicitados de duas maneiras: usando o método move() ou usando o método addMove() em conjunto com o método goNow().
+== Movements ==
+Movement can be requested in two ways: using the *move()* method or by using *addMove()* method in conjunction with *goNow()* method.
 
-O método move() não usa o buffer circular, o movimento não é armazenado, é executado imediatamente. O método inicia o movimento e retorna. Caso o robô já esteja em movimento, chamadas a esse método são ignoradas e não têm nenhum efeito. Para saber se o robô está em movimento, use o método isMoving().
+The *move()* method does not use the circular buffer, the movement is not stored, it is executed immediately. The method starts motion and returns. If the robot is already moving, calls to this method are ignored and have no effect. To see if the robot is in motion, use the isMoving() method.
 
 O método stopNow() aborta o movimento em curso imediatamente. Isso é feito simplesmente interrompendo o fluxo de pulsos, portanto cortando a alimentação das bobinas. Dependendo das condições, isso pode não parar imediatamente o robô, já que existe a inércia do movimento em curso que pode empurrar o robô por mais alguns centímetros.
 {{{
