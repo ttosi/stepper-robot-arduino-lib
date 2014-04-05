@@ -14,7 +14,7 @@ This library implements a class that takes care to synchronize the two motors to
  *Uses Timer 1 to control the pulse's timing.
  *Do not need a service function that is often called from the main loop. 
 
-*Note:* This version uses TimerOne? library to control the timer. This library is not included on package but you can download from Timer1 page. 
+*Note:* This version uses TimerOne? library to control the timer. This library is not included on package but you can download from [http://playground.arduino.cc/Code/Timer1 Timer1 page]. 
 
 
 = Overview =
