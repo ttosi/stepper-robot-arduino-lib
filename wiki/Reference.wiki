@@ -1,7 +1,20 @@
 #Stepper Robot lib reference
 
-= Introduction =
-Aqui está apresentada uma biblioteca para Arduíno feita para controlar um robô movido por dois motores de passo em configuração diferencial. A biblioteca cuida de controlar os dois motores para gerar os movimentos programados. Também foram implementados recursos avançados para a redução de vibrações, economia de energia e proteção dos motores e circuitos de controle.
+== Overview ==
+This library implements a class that takes care to synchronize the two motors to produce programmed motions. All methods are non-blocking and library works with unipolar or bipolar stepper motors. Advanced features were implemented for vibration reduction, energy saving and protection of control circuits.
+
+=== Features ===
+ *Extremely precise movements.
+ *Non-blocking methods.
+ *Works with bipolar or unipolar motors.
+ *Automatic acceleration and deceleration.
+ *Allows storing movement commands in a buffer so they run in sequence.
+ *Advanced capabilities for vibration control at low speeds.
+ *Supports half-step and full-step mode with one or two coils.
+ *Uses Timer 1 to control the pulse's timing.
+ *Do not need a service function that is often called from the main loop. 
+
+*Note:* This version uses TimerOne? library to control the timer. This library is not included on package but you can download from Timer1 page. 
 
 
 = Overview =
