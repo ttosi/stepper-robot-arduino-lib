@@ -56,8 +56,8 @@ The library already creates an instance of the main class (rob) but it needs to 
  rob.initLeftMotor(9,10,11,12);
 }}}
 
-= Empilhamento de comandos =
-A biblioteca inclui um buffer circular capaz de armazenar uma grande quantidade de comandos de movimento. Uma vez armazenados, estes comandos podem ser executados em sequência automaticamente.
+== Bufferized commands ==
+The library includes a circular buffer capable of storing a large amount of movement commands. Once stored, these commands can be executed in sequence automatically.
 
 = Modos de operação =
 Todo motor de passo pode ser operado em pelo menos 3 modos: passo completo (full step) com uma bobina, passo completo com duas bobinas e meio passo (half step). A biblioteca dá suporte aos três modos. Existem dois atributos na classe que controlam o modo de operação: halfStep e turbo. O de maior prioridade é o halfStep que seleciona entre o modo meio passo e o modo de passo completo. Caso o modo passo completo esteja selecionado, então o atributo turbo seleciona entre o modo de passo completo com uma bobina ou com duas. Quando o modo meio passo está selecionado o atributo turbo não tem efeito. Os quatro métodos listados abaixo controlam estes dois atributos. Recomenda-se selecionar o modo de operação na função setup() e não mudar durante a operação. Mudanças frequentes de modo podem ter impacto na precisão da navegação. É importante notar que o modo de operação dos motores influi bastante na vibração do robô. Em half-step os níveis de vibração são muito menores.
