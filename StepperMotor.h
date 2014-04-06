@@ -1,14 +1,17 @@
 // ---------------------------------------------------------------------------
-// Stepper Robot Library - v1.01 - 03/04/2014
+// Stepper Robot Library - v1.03 - 06/04/2014
 //
 // AUTHOR/LICENSE:
 // Created by Francesco A. Perrotti - faperrotti@hotmail.com
-// Copyright 2014 License: Creative Commons Attribution 3.0 License 
-// http://creativecommons.org/licenses/by/3.0/
+// Copyright 2014 License: GNU General Public License v3
+// http://www.gnu.org/licenses/
 //
 // LINKS:
 // Project home: https://code.google.com/p/stepper-robot-arduino-lib/
-// Or: https://fperrotti.wikispaces.com/Stepper+Lib+Arduino
+// Wiki reference: https://code.google.com/p/stepper-robot-arduino-lib/wiki/Reference
+// Playground page: http://playground.arduino.cc/Main/StepperRobot
+//
+// Em portugues: https://fperrotti.wikispaces.com/Stepper+Lib+Arduino
 //
 // DISCLAIMER:
 // This software is furnished "as is", without technical support, and with no 
@@ -18,22 +21,17 @@
 // Esta biblioteca é parte do projeto de desenvolvimento de
 // robôs móveis desenvolvido por Francesco A. Perrotti na
 // Fatec Americana.
-// É distribuída sob os termos da Creative Commons Attribution 3.0 License
 // Pode ser usada para fins comerciais ou pessoais livremente,
 // apenas deixe citado o autor.
-
-// Classe StepperMotor
-// Cuida de calcular e enviar para a placa controladora a configuração dos pinos
-// para os motores a cada passo, levando em consideração a direção do movimento
-// e o modo de operação dos motores. Os motores podem ser operados em 3 modos: 
-// half step, ou full step com uma ou duas bobinas.
+//
 
 #ifndef StepperMotor_h
 #define StepperMotor_h
 
 #include <Arduino.h>
 
-class StepperMotor {
+class StepperMotor 
+{
   public:
 	StepperMotor();
 	void init(int mPin_1, int mPin_2, int mPin_3, int mPin_4);
