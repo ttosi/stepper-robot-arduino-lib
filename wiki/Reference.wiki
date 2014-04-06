@@ -118,7 +118,7 @@ Below the class declaration as perceived by the main file.
 class StepperRobot{
 public:
    // setup
-   void init(int startSpeed, int cruiseSpeed, int pulsesToCruiseSpeed);
+   void init(int startSpeed, int cruiseSpeed, int pulsesToCruise);
    void initLeftMotor(int mPin_1, int mPin_2, int mPin_3, int mPin_4);
    void initRightMotor(int mPin_1, int mPin_2, int mPin_3, int mPin_4);
  
@@ -144,7 +144,7 @@ public:
 StepperRobot rob;
 }}}
 
-== Exemple program ==
+== Example program ==
 {{{
 #include <TimerOne.h>       // <<<<<< you need include TimerOne lib
 #include <StepperRobot.h>
@@ -162,7 +162,7 @@ void setup() {
  
   rob.init(startSpeed, cruiseSpeed, pulsesToCruise);
   rob.initRightMotor(2,3,4,5);
-  rob.initLeftMotor(A3,A2,A1,A0);  // funciona com os pinos analógicos.
+  rob.initLeftMotor(A3,A2,A1,A0);  // works with analog pins
  
   rob.halfStepOff();
   rob.turboOn();
@@ -172,7 +172,7 @@ void setup() {
   digitalWrite(statusLed, false);
 }
  
-// pulses to full turn
+// pulses to full turn/spin
 #define turnPulses 320
 #define spinPulses (turnPulses/2)
  
@@ -180,7 +180,7 @@ void loop() {
   // status led with heart beat 
   // do not work with many delays on code
   unsigned long ms= millis();
-  digitalWrite( statusLed, (ms >> 8) & (ms >> 6) & 1);
+  digitalWrite(statusLed, (ms >> 8)&(ms >> 6)&1);
  
   if(!rob.isMoving())
   {
