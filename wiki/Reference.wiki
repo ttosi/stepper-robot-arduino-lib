@@ -49,7 +49,7 @@ The main class implements an automatic control of acceleration and deceleration 
 The motors start movement at the speed indicated by *startSpeed* ​​and gradually accelerates until it reaches cruising speed set by *cruiseSpeed*. The number of pulses that will be used for the acceleration (or deceleration) is informed by *pulsesToCruise*. To stop or change the type of movement the robot is decelerated until it reaches the starting speed. This control is automatic.
 
 == Initialization ==
-The library already creates an instance of the main class (rob) but it needs to be initialized in setup() function. Is also required inform which pins will be used for each engine. If necessary you can use the analog pins.
+The library already creates an instance of the main class (*rob*) but it needs to be initialized in setup() function. Is also required inform which pins will be used for each engine. If necessary you can use the analog pins.
 {{{
  rob.init(startSpeed, cruiseSpeed, pulsesToCruise);
  rob.initRightMotor(4,5,6,7);
@@ -70,9 +70,9 @@ void turboOff();
 }}}
 
 == Vibration Control ==
-Stepper motors have operating characteristics that need to be taken into account during its operation. At low revs, some vibration before it reaches cruising speed, can occur. Eventually, depending on the motor used, battery voltage, the weight of the robot and other factors, certain values ​​of RPM, vibration can be severe enough to disrupt navigation causing deviations in the robot trajectory. To reduce vibration, the library uses two techniques. The first is to make the acceleration and deceleration pass more quickly through the low rpm. So the acceleration is not linear, the robot accelerates (or decelerates) more strongly at low revs and more smoothly at higher speeds.
+Stepper motors have operating characteristics that need to be taken into account during its operation. At low revs, some vibration can occur before it reaches cruising speed. Eventually, depending on the motor used, battery voltage, the weight of the robot and other factors, at certain values ​​of RPM vibration can be severe enough to disrupt navigation causing deviations in the robot trajectory. To reduce vibration, the library uses two techniques. The first is to make the acceleration and deceleration pass more quickly through the low rpm. So the acceleration is not linear, the robot accelerates (or decelerates) more strongly at low revs and more smoothly at higher speeds.
 
-Second technique uses cutting the supply coils before the end of pulse during the acceleration / deceleration. Normally the coils of motors are fed throughout the duration of the pulse. But in order to reduce the vibration of the power coils can be cut before the end of the pulse and wait for the remaining time with the coils turned off. This technique in addition to greatly decrease the vibration at low revs, also happens to save energy and increase robot autonomy. The tests gave very positive results, so this feature is already enabled by default.
+Second technique uses the cutting of supply coils before the end of pulse during the acceleration / deceleration. Normally the coils of motors are fed throughout the duration of the pulse. But in order to reduce the vibration, the power coils can be cut before the end of the pulse and kept turned off the remaining time. This technique in addition to greatly decrease the vibration at low revs, also happens to save energy and increase robot autonomy. The tests gave very positive results, so this feature is already enabled by default.
 
 The *setCutPercent()* method informs the initial cut percentage. This percentage is a value between 0 and 1 that indicates the percentage of the pulse before cutting. For example, if the pulse has a duration of 10 milliseconds and percentage reported is 0.75, then the coils will be powered by 75% of the time (7.5 ms) and kept turned off the remaining time (2.5 ms).
 {{{
@@ -81,10 +81,10 @@ void setCutPercent(float initialCutPercent);
 
 Cutting coils is only done during the acceleration / deceleration. At cruising speed there is no cut. The value entered by *setCutPercent()* method refers to the initial cutoff value, which is applied when the motors rotate at the start speed. As speed increases, percentage increases until reaching 1.0 (100%) at cruising speed.
 
-The best value for this parameter depends on so many factors that must be calibrated especially for the robot in question and the operation mode of motors (half or full step) experimentally. Very high values ​​(close to 1) are less effective, but very low values ​​can cause the loss of steps. The default value is 0.9.
+The best value for this parameter depends on so many factors that must be calibrated especially for the robot in question and the operation mode of motors (half or full step) experimentally. Very high values ​​(close to 1) are less effective, but very low values ​​can cause the loss of steps. Default value is 0.9.
 
 == Movements ==
-Movement can be requested in two ways: using the *move()* method or by using *addMove()* method in conjunction with *goNow()* method.
+Movements can be requested in two ways: using the *move()* method or by using *addMove()* method in conjunction with *goNow()* method.
 
 The *move()* method does not use the circular buffer, the movement is not stored, it is executed immediately. The method starts motion and returns. If the robot is already moving, calls to this method are ignored and have no effect. To see if the robot is in motion, use the *isMoving()* method.
 
