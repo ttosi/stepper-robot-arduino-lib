@@ -1,14 +1,17 @@
 // ---------------------------------------------------------------------------
-// Stepper Robot Library - v1.01 - 03/04/2014
+// Stepper Robot Library - v1.03 - 06/04/2014
 //
 // AUTHOR/LICENSE:
 // Created by Francesco A. Perrotti - faperrotti@hotmail.com
-// Copyright 2014 License: Creative Commons Attribution 3.0 License 
-// http://creativecommons.org/licenses/by/3.0/
+// Copyright 2014 License: GNU General Public License v3
+// http://www.gnu.org/licenses/
 //
 // LINKS:
 // Project home: https://code.google.com/p/stepper-robot-arduino-lib/
-// Or: https://fperrotti.wikispaces.com/Stepper+Lib+Arduino
+// Wiki reference: https://code.google.com/p/stepper-robot-arduino-lib/wiki/Reference
+// Playground page: http://playground.arduino.cc/Main/StepperRobot
+//
+// Portuguese: https://fperrotti.wikispaces.com/Stepper+Lib+Arduino
 //
 // DISCLAIMER:
 // This software is furnished "as is", without technical support, and with no 
@@ -18,10 +21,9 @@
 // Esta biblioteca é parte do projeto de desenvolvimento de
 // robôs móveis desenvolvido por Francesco A. Perrotti na
 // Fatec Americana.
-// É distribuída sob os termos da Creative Commons Attribution 3.0 License
 // Pode ser usada para fins comerciais ou pessoais livremente,
 // apenas deixe citado o autor.
-
+//
 
 #include "StepperRobot.h"
 
@@ -75,8 +77,7 @@ void timerEvent()
 }
 
 void PulseRobot::doNextPulse()
-{  unsigned long mcs= micros();
-
+{  
    if(!pulsesToGo)
    {
 	   movingOn= false;
@@ -88,6 +89,8 @@ void PulseRobot::doNextPulse()
 	   return;
    }
 
+   unsigned long mcs= micros();
+
    mtLeft.nextStep(mvTable[moveType].left);
    mtRight.nextStep(mvTable[moveType].right);
    pulsesToGo--;
@@ -95,7 +98,7 @@ void PulseRobot::doNextPulse()
 
    if(pulsesToGo > acelUntil)
    {
-	   pulseTime= max(timeOnCruize, pulseTime-timeStep*escaler);
+	   pulseTime= max(timeOnCruise, pulseTime-timeStep*escaler);
 	   escaler-=escalerStep;
      cutPercent+= percentStep;
      cutOn= true;
@@ -109,14 +112,14 @@ void PulseRobot::doNextPulse()
        cutOn= true;
 	   }
 
-   // controle do blink (pwm)
+   // chopper control
    if(blinkOn)
    {
      blinkStatus= true;
      nextBlink= mcs + pulseTime/blinkDiv;
    }
 
-   // controle do cut
+   // cut controle 
    if(cutOn)
      nextCut= mcs + pulseTime*cutPercent;
 
@@ -145,14 +148,14 @@ void PulseRobot::doNextCut()
 
 /**
    startSpeed: pulses/second
-   cruizeSpeed: pulses/second
-   pulsesToCruize: how many pulses from start to cruize.
+   cruiseSpeed: pulses/second
+   pulsesToCruise: how many pulses from start to cruise.
 */
-void PulseRobot::init(int startSpeed, int cruizeSpeed, int pulsesToCruize)
+void PulseRobot::init(int startSpeed, int cruiseSpeed, int pulsesToCruise)
 {
-  this->pulsesToCruize = pulsesToCruize;
+  this->pulsesToCruise = pulsesToCruise;
   timeOnStart = 1000000L / startSpeed;    // tempo em microssegundos
-  timeOnCruize= 1000000L / cruizeSpeed;
+  timeOnCruise= 1000000L / cruiseSpeed;
 
   Timer1.initialize(timerTime);
   Timer1.attachInterrupt( timerEvent ); 
@@ -171,19 +174,19 @@ boolean PulseRobot::move(char movType, int pulses)
 
    // calcula parametros para aceleração
    pulseTime= timeOnStart;
-   timeStep = (pulseTime-timeOnCruize) / pulsesToCruize;
+   timeStep = (pulseTime-timeOnCruise) / pulsesToCruise;
 
-   decelAfter= min(pulses/2, pulsesToCruize);
+   decelAfter= min(pulses/2, pulsesToCruise);
    acelUntil= pulses-decelAfter;
    escaler= 1.5;
-   escalerStep= (escaler-(2-escaler))/pulsesToCruize;
+   escalerStep= (escaler-(2-escaler))/pulsesToCruise;
    cutPercent= initialCutPercent;
-   percentStep= (1-cutPercent)/pulsesToCruize;
+   percentStep= (1-cutPercent)/pulsesToCruise;
 
-   // pwm para travar rodas
+   // chopper
    blinkOn= (!mvTable[moveType].left) || (!mvTable[moveType].right);
 
-   // inicia o movimento
+   // start movement
    pulsesToGo= pulses;
    nextPulse= micros()+16;
    movingOn= true;
@@ -191,13 +194,14 @@ boolean PulseRobot::move(char movType, int pulses)
    return true;
 }
 
-void PulseRobot::stopNow(){
+void PulseRobot::stopNow()
+{
    pulsesToGo= 0;
 }
 
 void PulseRobot::decelStop()
 {
-   pulsesToGo= min(pulsesToGo, pulsesToCruize);
+   pulsesToGo= min(pulsesToGo, pulsesToCruise);
    decelAfter= pulsesToGo;
 }
 

@@ -1,18 +1,29 @@
 // ---------------------------------------------------------------------------
-// Stepper Robot Library - v1.01 - 03/04/2014
+// Stepper Robot Library - v1.03 - 06/04/2014
 //
 // AUTHOR/LICENSE:
 // Created by Francesco A. Perrotti - faperrotti@hotmail.com
-// Copyright 2014 License: Creative Commons Attribution 3.0 License 
-// http://creativecommons.org/licenses/by/3.0/
+// Copyright 2014 License: GNU General Public License v3
+// http://www.gnu.org/licenses/
 //
 // LINKS:
 // Project home: https://code.google.com/p/stepper-robot-arduino-lib/
-// Or: https://fperrotti.wikispaces.com/Stepper+Lib+Arduino
+// Wiki reference: https://code.google.com/p/stepper-robot-arduino-lib/wiki/Reference
+// Playground page: http://playground.arduino.cc/Main/StepperRobot
+//
+// Portuguese: https://fperrotti.wikispaces.com/Stepper+Lib+Arduino
 //
 // DISCLAIMER:
 // This software is furnished "as is", without technical support, and with no 
 // warranty, express or implied, as to its usefulness for any purpose.
+// ---------------------------------------------------------------------------
+//
+// Esta biblioteca é parte do projeto de desenvolvimento de
+// robôs móveis desenvolvido por Francesco A. Perrotti na
+// Fatec Americana.
+// Pode ser usada para fins comerciais ou pessoais livremente,
+// apenas deixe citado o autor.
+//
 //
 // BACKGROUND:
 // I am developing a robot that uses two stepper motors in a differential configuration. 
@@ -33,8 +44,12 @@
 // * Uses Timer 1 to control the pulse's timing.
 // * Do not need a service function that is often called from the main loop.
 //
+// NOTE: This version uses TimerOne library to control the timer. This library 
+//       is not included on package but you can download from Timer1 page at
+//       http://playground.arduino.cc/Code/Timer1
+//
 // SETUP 
-// rob.init(startSpeed(*), cruizeSpeed(*), pulsesToCruize);
+// rob.init(startSpeed(*), cruiseSpeed(*), pulsesToCruise);
 // rob.initRightMotor(4,5,6,7); (**)
 // rob.initLeftMotor(9,10,11,12); (**)
 //
@@ -56,14 +71,18 @@
 // rob.setCutPercent(initialCutPercent) - set the initial cut percent value (vibration control)
 //
 // HISTORY:
-// 03/04/2014 v1.01 Initial release.
+// 06/04/2014 v1.03 
+//   * Some english errors corrected on code and comments.
+//   * Licence adjust to fit to Google Code
+//   * File headers comments updated with new links.
+//      
+// 05/04/2014 v1.02 
+//   * File headers comments review.
+//
+// 03/04/2014 v1.01 
+//   * Initial release.
 // ---------------------------------------------------------------------------
 
-// Esta biblioteca é parte do projeto de desenvolvimento de
-// robôs móveis desenvolvido por Francesco A. Perrotti na
-// Fatec Americana.
-// Pode ser usada para fins comerciais, educacionais ou pessoais,
-// apenas deixe citado o autor.
 
 #ifndef StepperRobot_h
 #define StepperRobot_h
@@ -71,9 +90,9 @@
 #include <Arduino.h>
 #include <TimerOne.h>
 #include "StepperMotor.h"
-//#include "PulseRobot.h"
 #include "stpCircBuff.h"
 
+// movements
 #define mvAhead     0
 #define mvBack      1
 #define mvSpinL  	2
@@ -84,11 +103,11 @@
 #define mvBkTurnR 	7
 #define mvBrake 	8
 
+// pulse control
 class PulseRobot {
 public:
-
 	PulseRobot();
-	void init(int startSpeed, int cruizeSpeed, int pulsesToCruize);
+	void init(int startSpeed, int cruiseSpeed, int pulsesToCruise);
 	void initLeftMotor(int mPin_1, int mPin_2, int mPin_3, int mPin_4);
 	void initRightMotor(int mPin_1, int mPin_2, int mPin_3, int mPin_4);
 
@@ -102,19 +121,20 @@ public:
     void halfStepOff();
     void setCutPercent(float initialCutPercent);
 
-	// coisas que não deviam ser públicas
+	// that should not be public
 	void doNextPulse();
 	void doNextBlink();
     void doNextCut();
+
 protected:
 	virtual void afterMove()=0;
 
 private:
 	StepperMotor mtLeft;
 	StepperMotor mtRight;
-	int pulsesToCruize;
+	int pulsesToCruise;
 	unsigned long timeOnStart;
-	unsigned long timeOnCruize;
+	unsigned long timeOnCruise;
 	unsigned long timeStep;
 	unsigned long pulseTime;
 	int acelUntil, decelAfter;
@@ -127,6 +147,7 @@ private:
 	float initialCutPercent;
 };
 
+// buffer control
 class MoveRobot: public PulseRobot {
 public:
 	MoveRobot();
@@ -141,11 +162,12 @@ private:
 	void moveNext();
 };
 
+// publish class
 class StepperRobot: public MoveRobot{
 };
 
+// instance
 extern StepperRobot rob;
-
 
 #endif
 
