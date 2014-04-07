@@ -3,6 +3,8 @@
 == Overview ==
 This library implements a class that takes care to synchronize the two motors to produce programmed motions. All methods are non-blocking and library works with unipolar or bipolar stepper motors. Advanced features were implemented for vibration reduction, energy saving and protection of control circuits.
 
+This library intents to generate signals to ULN2003/2803 based boards or equivalents circuits to drive unipolar motors and also boards with double h-bridge to drive bipolar motors. These boards do not have the advanced features that are typically found in boards like Easy Driver or Pololu boards based on A4988. So, library try to provide a better and safe control with no hardware resources. 
+
 === Features ===
  * Extremely precise movements.
  * Non-blocking methods.
