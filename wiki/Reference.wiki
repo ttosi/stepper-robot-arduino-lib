@@ -98,7 +98,7 @@ void stopNow();
 void decelStop();
 }}}
 
-The *decelStop()* method also aborts the ongoing movement, but does so by forcing the robot to go into deceleration. The robot will stop when it reaches the starting speed. The number of pulses that the robot will walk until stop depends on the speed at which it is moving. In cruising speed (maximum) then the amount of pulses specified by *pulsesToCruise* is required. If the speed is lower then fewer pulses are needed.
+The *decelStop()* method also aborts the ongoing movement, but does so by forcing the robot to go into deceleration. The robot will stop when it reaches the starting speed. The number of pulses that the robot will walk until stop depends on the speed at which it is moving. In cruising speed (maximum) the amount of pulses specified by *pulsesToCruise* is required. If the speed is lower then fewer pulses are needed.
 
 
 == Bufferized movements ==
