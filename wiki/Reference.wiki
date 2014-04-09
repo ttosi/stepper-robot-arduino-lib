@@ -1,9 +1,9 @@
 #Stepper Robot lib reference
 
 == Overview ==
-Implements a class that takes care to synchronize the two motors to produce programmed motions. All methods are non-blocking and library works with unipolar or bipolar stepper motors. Advanced features were implemented for vibration reduction, energy saving and protection of control circuits.
+This library implements a class that takes care to synchronize the two motors to produce programmed motions. All methods are non-blocking and library works with unipolar or bipolar stepper motors. Advanced features were implemented for vibration reduction, energy saving and protection of control circuits.
 
-This library intents to generate signals to ULN2003/2803 based boards or equivalents circuits to drive unipolar motors and also boards with double h-bridge to drive bipolar motors. These boards do not have the advanced features that are typically found in boards like Easy Driver or Pololu boards based on A4988. So, library try to provide a better and safe control with no hardware resources. 
+The class intents to generate signals to ULN2003/2803 based boards or equivalent circuits to drive unipolar motors and also boards with double h-bridge to drive bipolar motors. These boards do not have the advanced features that are typically found in boards like Easy Driver or Pololu boards based on A4988. So, library try to provide a better and safe control with no hardware resources. 
 
 === Features ===
  * Extremely precise movements.
@@ -14,15 +14,14 @@ This library intents to generate signals to ULN2003/2803 based boards or equival
  * Advanced capabilities for vibration control at low speeds.
  * Supports half-step and full-step mode with one or two coils.
  * Uses Timer 1 to control the pulse's timing.
- * Do not need a service function that is often called from the main loop. 
 
-*Note:* This version uses TimerOne? library to control the timer. This library is not included on package but you can download from [http://playground.arduino.cc/Code/Timer1 Timer1 page]. 
+*Note:* This version uses TimerOne library to control the timer. This library is not included on package but you can download from [http://playground.arduino.cc/Code/Timer1 Timer1 page]. 
 
 
 == Introduction ==
-The library assumes that there are two 4-phase stepping motors installed on differential configuration. It is also assumed that both motors have the same number of steps per revolution. The motors can be unipolar or bipolar. The main class controls both motors maintaining synchrony between them to produce different movements quantified by pulses. Each pulse when sent to coils, make motors spin one step.
+It is assumed that there are two 4-phase stepping motors installed on differential configuration. It is also assumed that both motors have the same number of steps per revolution. Motors can be unipolar or bipolar. Main class controls both motors maintaining synchrony between them to produce different movements quantified by pulses. Each pulse when sent to coils, make motors spin one step.
 
-All methods are non-blocking. All return immediately and when appropriate, perform the movement in background. The methods never wait the end of the movement to return. The movements are controlled using the Timer 1 Arduino. This gives more accurately for timing pulses and also eliminates the need for a service function that is often called by the main loop.
+All methods are non-blocking. All return immediately and when appropriate, perform the movement in background. The methods never wait the end of the movement to return. The movements are controlled using the arduino's timer 1. This gives more accurately for timing pulses and also eliminates the need for a service function that is often called by the main loop.
 
 This version implements the following movement types:
 {{{
@@ -45,7 +44,7 @@ The main class implements an automatic control of acceleration and deceleration 
 {{{
 # define startSpeed      ​​72 // start speed (pulses per second)
 # define cruiseSpeed ​​   182 // cruise speed (pulses per second)
-# define pulsesToCruise 110 // how many pulses to get cruising
+# define pulsesToCruise 100 // how many pulses to get cruising
 }}}
 
 The motors start movement at the speed indicated by *startSpeed* ​​and gradually accelerates until it reaches cruising speed set by *cruiseSpeed*. The number of pulses that will be used for the acceleration (or deceleration) is informed by *pulsesToCruise*. To stop or change the type of movement the robot is decelerated until it reaches the starting speed. This control is automatic.
@@ -72,16 +71,16 @@ void turboOff();
 }}}
 
 == Vibration Control ==
-Stepper motors have operating characteristics that need to be taken into account during its operation. At low revs, some vibration can occur before it reaches cruising speed. Eventually, depending on the motor used, battery voltage, the weight of the robot and other factors, at certain values ​​of RPM vibration can be severe enough to disrupt navigation causing deviations in the robot trajectory. To reduce vibration, the library uses two techniques. The first is to make the acceleration and deceleration pass more quickly through the low rpm. So the acceleration is not linear, the robot accelerates (or decelerates) more strongly at low revs and more smoothly at higher speeds.
+Stepper motors have operating characteristics that need to be taken into account during its operation. At low revs, some vibration can occur before it reaches cruising speed. Eventually, depending on the motor used, battery voltage, the weight of the robot and other factors, at certain values ​​of RPM, vibration can be severe enough to disrupt navigation causing deviations in the robot trajectory. To reduce vibration, the library uses two techniques. The first is to make the acceleration and deceleration pass more quickly through the low rpm. So the acceleration is not linear, the robot accelerates (or decelerates) more strongly at low revs and more smoothly at higher speeds.
 
-Second technique uses the cutting of supply coils before the end of pulse during the acceleration / deceleration. Normally the coils of motors are fed throughout the duration of the pulse. But in order to reduce the vibration, the power coils can be cut before the end of the pulse and kept turned off the remaining time. This technique in addition to greatly decrease the vibration at low revs, also happens to save energy and increase robot autonomy. The tests gave very positive results, so this feature is already enabled by default.
+Second technique uses the cutting of supply coils before the end of pulse during the acceleration/deceleration. Normally, the motor's coils are fed throughout the duration of the pulse. But in order to reduce the vibration, the power coils can be cut before the end of the pulse and kept turned off the remaining time. This technique in addition to greatly decrease the vibration at low revs, also happens to save energy and increase robot autonomy. The tests gave very positive results, so this feature is already enabled by default.
 
 The *setCutPercent()* method informs the initial cut percentage. This percentage is a value between 0 and 1 that indicates the percentage of the pulse before cutting. For example, if the pulse has a duration of 10 milliseconds and percentage reported is 0.75, then the coils will be powered by 75% of the time (7.5 ms) and kept turned off the remaining time (2.5 ms).
 {{{
 void setCutPercent(float initialCutPercent);
 }}}
 
-Cutting coils is only done during the acceleration / deceleration. At cruising speed there is no cut. The value entered by *setCutPercent()* method refers to the initial cutoff value, which is applied when the motors rotate at the start speed. As speed increases, percentage increases until reaching 1.0 (100%) at cruising speed.
+Cutting coils is only done during the acceleration/deceleration. At cruising speed there is no cut. The value entered by *setCutPercent()* method refers to the initial cutoff value, which is applied when the motors rotate at the start speed. As speed increases, percentage increases until reaching 1.0 (100%) at cruising speed.
 
 The best value for this parameter depends on so many factors that must be calibrated especially for the robot in question and the operation mode of motors (half or full step) experimentally. Very high values ​​(close to 1) are less effective, but very low values ​​can cause the loss of steps. Default value is 0.9.
 
